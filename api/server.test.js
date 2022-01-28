@@ -19,3 +19,13 @@ beforeAll(async () => {
 afterAll(async () => {
   await db.destroy()
 })
+
+
+describe('POST /register', () => {
+  test('returns new registered user with status 200', async () => {
+    const res = await request(server)
+    .post('/api/auth/register')
+    .send({username:'foo',password:'bar'})
+    expect(res.status).toBe(200)
+  })
+})
