@@ -24,13 +24,23 @@ afterAll(async () => { //after all tests clear the db
 
 
 describe('POST /register', () => {
-  test('registering returns new registered username', async () => {
+  test('registering returns new registered username and a new 201', async () => {
     const res = await request(server)
     .post('/api/auth/register')
     .send({username:'foob',password:'argh'})
     expect(res.status).toBe(201)
     expect(res.body).toMatchObject({username: 'foob'})
   })
+  test('prohibits registering if username is already taken', async()=> {
+    const res = await request(server)
+    .post('/api/auth/register')
+    .send({username:'foob',password:'argh'})
+
+    expect(res.status).toBe(400)
+    
+  })
+
+
 })
 
 
@@ -43,9 +53,7 @@ describe('POST /login', () => {
 
     expect(res.body).toMatchObject({message:'welcome, foob'})
   })
-})
 
-describe('POST /login', () => {
   test('successful login gives status 200',async() => {
     const res = await request(server)
     .post('/api/auth/login')
@@ -55,4 +63,6 @@ describe('POST /login', () => {
     
   })
 })
+
+
 

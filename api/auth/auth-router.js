@@ -3,7 +3,7 @@ const router = require('express').Router();
 const bcrypt = require("bcryptjs")
 const {checkUserExists, checkUsername}  = require('../middleware/auth_middleware')
 const User = require("../users/users_model")
-const { BCRYPT_ROUNDS } = require('../secrets/index')
+const { BCRYPT_ROUNDS, tokenBuilder } = require('../secrets/index')
 
 router.post('/register', checkUserExists, async(req, res, next) => {
   
@@ -74,7 +74,8 @@ router.post('/login', checkUsername,(req, res, next) => {
       let { username, password } = req.body
       try{
         if(bcrypt.compareSync(password, req.user.password)){
-          res.json({message: `welcome, ${username}`})
+          const token = tokenBuilder(req.user)
+          res.json({message: `welcome, ${username}`, token})
         }
       } 
       catch(err){
