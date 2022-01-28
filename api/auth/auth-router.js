@@ -4,8 +4,9 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const { JWT_SECRET } = require("../secrets/index")
 const User = require("../users/users_model")
+const { BCRYPT_ROUNDS } = require('../secrets/index')
 
-router.post('/register', (req, res) => {
+router.post('/register', (req, res, next) => {
   res.end('implement register, please!');
   /*
     IMPLEMENT
@@ -32,10 +33,22 @@ router.post('/register', (req, res) => {
     4- On FAILED registration due to the `username` being taken,
       the response body should include a string exactly as follows: "username taken".
   */
+
+      let user = req.body
+      // bcrypting the password before saving
+      const hash = bcrypt.hashSync(user.password, BCRYPT_ROUNDS)
+      // never save the plain text password in the db
+      user.password = hash
+    
+      User.add(user)
+        .then(saved => {
+          res.status(201).json(saved)
+        })
+        .catch(next) 
 });
 
-router.post('/login', (req, res) => {
-  res.end('implement login, please!');
+router.post('/login', (req, res, next) => {
+  
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -59,6 +72,19 @@ router.post('/login', (req, res) => {
     4- On FAILED login due to `username` not existing in the db, or `password` being incorrect,
       the response body should include a string exactly as follows: "invalid credentials".
   */
+
+      let user = req.body
+      try{
+
+        if(bcrypt.compareSync(user.password)){
+          res.json({message: `welcome, ${user.username}`})
+        }
+      }
+      catch(err){
+        next(err)
+      }
+
+
 });
 
 module.exports = router;
