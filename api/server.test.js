@@ -8,7 +8,7 @@ const db = require('../data/dbConfig')
 
 
 test('sanity', () => {
-  expect(true).not.toBe(false)
+  expect(true).not.toBe(false) //changed sanity so we are sane
 })
 
 it('correct env var',()=>{expect(process.env.NODE_ENV).toBe('testing')}) //testing the testing environment
@@ -51,6 +51,7 @@ describe('POST /login', () => {
     const res = await request(server)
     .post('/api/auth/login')
     .send({username:'foob',password:'argh'})
+
     expect(res.status).toBe(200)
     expect(res.body).toMatchObject({message:'welcome, foob'})
   })
@@ -66,5 +67,26 @@ describe('POST /login', () => {
   })
 })
 
+describe('GET restricted /jokes', () => {
+  test('successful login allows access to all of the jokes' ,async() => {
+    const res = await request(server)
+    .post('/api/auth/login')
+    .send({username:'foob',password:"argh"})
+    
+    const jokes = await request(server)
+      .get('/api/jokes')
+      .set("Authorization",res.body.token)
 
+    expect(jokes.status).toBe(200)
+    expect(jokes.body[2]).toHaveProperty("id")
+    expect(jokes.body[1]).toHaveProperty("joke")
+  })
 
+  test('failed login gives them none of the jokes',async () => {
+    const res = await request(server)
+    .get('/api/jokes')
+    
+    expect(res.status).toBe(401)
+    expect(res.body.message).toMatch(/token required/i) //message wasn't working as an object - using case insensitive string here instead
+  })
+})
