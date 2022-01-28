@@ -11,6 +11,8 @@ test('sanity', () => {
   expect(true).not.toBe(false)
 })
 
+it('correct env var',()=>{expect(process.env.NODE_ENV).toBe('testing')}) //testing the testing environment
+
 beforeAll(async () => {
   await db.migrate.rollback()
   await db.migrate.latest()
