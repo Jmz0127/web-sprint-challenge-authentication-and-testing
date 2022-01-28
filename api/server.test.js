@@ -24,10 +24,11 @@ afterAll(async () => {
 
 
 describe('POST /register', () => {
-  test('returns new registered user with status 200', async () => {
+  test('returns new registered user with status 201', async () => {
     const res = await request(server)
     .post('/api/auth/register')
-    .send({username:'foo',password:'bar'})
-    expect(res.status).toBe(200)
+    .send({username:'foob',password:'argh'})
+    expect(res.status).toBe(201)
+    expect(res.body).toMatchObject({username: 'foob'})
   })
 })
