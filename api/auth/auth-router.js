@@ -1,8 +1,7 @@
 const router = require('express').Router();
 
 const bcrypt = require("bcryptjs")
-const jwt = require("jsonwebtoken")
-const { JWT_SECRET } = require("../secrets/index")
+const checkUserExists  = require('../middleware/auth_middleware')
 const User = require("../users/users_model")
 const { BCRYPT_ROUNDS } = require('../secrets/index')
 
@@ -34,20 +33,18 @@ router.post('/register', (req, res, next) => {
       the response body should include a string exactly as follows: "username taken".
   */
 
-      let user = req.body
+      let { username, password } = req.body
       // bcrypting the password before saving
-      const hash = bcrypt.hashSync(user.password, BCRYPT_ROUNDS)
-      // never save the plain text password in the db
-      user.password = hash
+      const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS)
     
-      User.add(user)
-        .then(saved => {
-          res.status(201).json(saved)
+      User.add({username, password: hash})
+        .then(newUser => {
+          res.status(201).json(newUser)
         })
         .catch(next) 
 });
 
-router.post('/login', (req, res, next) => {
+router.post('/login',checkUserExists, (req, res, next) => {
   
   /*
     IMPLEMENT
