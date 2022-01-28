@@ -1,11 +1,11 @@
 const router = require('express').Router();
 
 const bcrypt = require("bcryptjs")
-const checkUserExists  = require('../middleware/auth_middleware')
+const {checkUserExists, checkUsername}  = require('../middleware/auth_middleware')
 const User = require("../users/users_model")
 const { BCRYPT_ROUNDS } = require('../secrets/index')
 
-router.post('/register', (req, res, next) => {
+router.post('/register', checkUserExists, async(req, res, next) => {
   
   /*
     IMPLEMENT
@@ -33,18 +33,19 @@ router.post('/register', (req, res, next) => {
       the response body should include a string exactly as follows: "username taken".
   */
 
-      let { username, password } = req.body
-      // bcrypting the password before saving
-      const hash = bcrypt.hashSync(password, BCRYPT_ROUNDS)
-    
-      User.add({username, password: hash})
-        .then(newUser => {
-          res.status(201).json(newUser)
-        })
-        .catch(next) 
+      try{
+        let {username,password} = req.body
+        const hash = bcrypt.hashSync(password,BCRYPT_ROUNDS)
+     
+        const newUser = await User.add({username, password: hash})
+        res.status(201).json(newUser)
+      }
+      catch(err){
+        next(err)
+      }
 });
 
-router.post('/login',checkUserExists, (req, res, next) => {
+router.post('/login', checkUsername,(req, res, next) => {
   
   /*
     IMPLEMENT
