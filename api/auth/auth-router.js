@@ -73,11 +73,11 @@ router.post('/login', (req, res, next) => {
       the response body should include a string exactly as follows: "invalid credentials".
   */
 
-      let user = req.body
+      let { username, password } = req.body
       try{
 
-        if(bcrypt.compareSync(user.password)){
-          res.json({message: `welcome, ${user.username}`})
+        if(bcrypt.compareSync(password, req.user.password)){
+          res.json({message: `welcome, ${username}`})
         }
       }
       catch(err){
