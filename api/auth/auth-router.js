@@ -7,7 +7,7 @@ const User = require("../users/users_model")
 const { BCRYPT_ROUNDS } = require('../secrets/index')
 
 router.post('/register', (req, res, next) => {
-  res.end('implement register, please!');
+  
   /*
     IMPLEMENT
     You are welcome to build additional middlewares to help with the endpoint's functionality.
@@ -75,11 +75,10 @@ router.post('/login', (req, res, next) => {
 
       let { username, password } = req.body
       try{
-
         if(bcrypt.compareSync(password, req.user.password)){
           res.json({message: `welcome, ${username}`})
         }
-      }
+      } 
       catch(err){
         next(err)
       }
