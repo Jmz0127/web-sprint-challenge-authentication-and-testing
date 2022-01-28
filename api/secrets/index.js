@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET || "shh"
 
-function tokenMaker(user){
+function tokenBuilder(user){
     const payload = {
         subject: user.id,
         username: user.username
@@ -15,7 +15,7 @@ function tokenMaker(user){
 }
 
 module.exports = {
-    tokenMaker,
+    tokenBuilder,
     JWT_SECRET,
     BCRYPT_ROUNDS: process.env.BCRYPT_ROUNDS || 8,
 }

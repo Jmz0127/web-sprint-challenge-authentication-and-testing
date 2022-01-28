@@ -24,22 +24,23 @@ afterAll(async () => { //after all tests clear the db
 
 
 describe('POST /register', () => {
-  test('registering returns new registered username and a new 201', async () => {
+  test('registering returns new registered username with a 201', async () => {
     const res = await request(server)
     .post('/api/auth/register')
     .send({username:'foob',password:'argh'})
+
     expect(res.status).toBe(201)
     expect(res.body).toMatchObject({username: 'foob'})
   })
+
   test('prohibits registering if username is already taken', async()=> {
     const res = await request(server)
     .post('/api/auth/register')
     .send({username:'foob',password:'argh'})
 
-    expect(res.status).toBe(400)
-    
+    expect(res.status).toBe(401)
+    expect(res.body.message).toBe("username taken")
   })
-
 
 })
 
@@ -50,16 +51,17 @@ describe('POST /login', () => {
     const res = await request(server)
     .post('/api/auth/login')
     .send({username:'foob',password:'argh'})
-
+    expect(res.status).toBe(200)
     expect(res.body).toMatchObject({message:'welcome, foob'})
   })
 
-  test('successful login gives status 200',async() => {
+  test('one or both incorrect username/password prompts them with correct error',async() => {
     const res = await request(server)
     .post('/api/auth/login')
-    .send({username:'foob',password:'argh'})
+    .send({username:'foo',password:'argh'})
 
-    expect(res.status).toBe(200)
+    expect(res.status).toBe(401)
+    expect(res.body).toMatchObject({message:'invalid credentials'})
     
   })
 })

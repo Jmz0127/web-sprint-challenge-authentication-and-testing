@@ -75,7 +75,7 @@ router.post('/login', checkUsername,(req, res, next) => {
       try{
         if(bcrypt.compareSync(password, req.user.password)){
           const token = tokenBuilder(req.user)
-          res.json({message: `welcome, ${username}`, token})
+          res.json({message: `welcome, ${username}`,token})
         }
       } 
       catch(err){
