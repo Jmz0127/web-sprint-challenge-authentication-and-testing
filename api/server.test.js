@@ -24,7 +24,7 @@ afterAll(async () => { //after all tests clear the db
 
 
 describe('POST /register', () => {
-  test('returns new registered user with status 201', async () => {
+  test('registering returns new registered username', async () => {
     const res = await request(server)
     .post('/api/auth/register')
     .send({username:'foob',password:'argh'})
@@ -33,12 +33,26 @@ describe('POST /register', () => {
   })
 })
 
+
+
 describe('POST /login', () => {
-  test('Success with login status 200',async() => {
-    const res = await request(server).post('/api/auth/login')
+  test('successful login gives correct welcome message' ,async() => {
+    const res = await request(server)
+    .post('/api/auth/login')
     .send({username:'foob',password:'argh'})
 
-    expect(res.status).toBe(200)
     expect(res.body).toMatchObject({message:'welcome, foob'})
   })
 })
+
+describe('POST /login', () => {
+  test('successful login gives status 200',async() => {
+    const res = await request(server)
+    .post('/api/auth/login')
+    .send({username:'foob',password:'argh'})
+
+    expect(res.status).toBe(200)
+    
+  })
+})
+
